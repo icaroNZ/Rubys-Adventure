@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
@@ -10,11 +7,15 @@ public class EnemyController : MonoBehaviour
     public float changeTime = 3.0f;
     
     private Rigidbody2D _rigidbody2D;
+    private Animator _animator;
     private float _timer;
     private int _direction = 1;
+    private static readonly int MoveX = Animator.StringToHash("MoveX");
+    private static readonly int MoveY = Animator.StringToHash("MoveY");
 
     private void Start(){
         _rigidbody2D = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
         _timer = changeTime;
     }
 
@@ -31,9 +32,13 @@ public class EnemyController : MonoBehaviour
         var position = _rigidbody2D.position;
         if (vertical){
             position.y += speed * Time.deltaTime * _direction;
+            _animator.SetFloat(MoveX, 0);
+            _animator.SetFloat(MoveY, _direction);
         }
         else{
             position.x += speed * Time.deltaTime * _direction;
+            _animator.SetFloat(MoveX, _direction);
+            _animator.SetFloat(MoveY, 0);
         }
         _rigidbody2D.MovePosition(position);
     }

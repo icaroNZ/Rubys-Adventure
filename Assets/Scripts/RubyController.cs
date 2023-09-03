@@ -8,6 +8,8 @@ public class RubyController : MonoBehaviour
 {
     
     private Rigidbody2D _rigidbody2D;
+    private Animator _animator;
+    private Vector2 _lookDirection = new Vector2(1, 0);
     public float speed = 5.0f;
     public int maxHealth = 5;
     public float invencibleDuration = 2.0f;
@@ -22,13 +24,25 @@ public class RubyController : MonoBehaviour
         //QualitySettings.vSyncCount = 0;
         //Application.targetFrameRate = 10;
         _rigidbody2D = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
         _currentHealth = maxHealth;
     }
 
-    void Update()
-    {
+    void Update(){
         _horizontal = Input.GetAxis("Horizontal");
         _vertical = Input.GetAxis("Vertical");
+
+        var move = new Vector2(_horizontal, _vertical);
+        if (!Mathf.Approximately(move.x, 0.0f) || !Mathf.Approximately(move.y, 0.0f)){
+            _lookDirection.Set(move.x, move.y);
+            _lookDirection.Normalize();
+        }
+
+        _animator.SetFloat("Look X", _lookDirection.x);
+        _animator.SetFloat("Look Y", _lookDirection.y);
+        _animator.SetFloat("Speed", move.magnitude);
+
+
 
         if (_isInvencible){
             _invencibleTimer -= Time.deltaTime;
@@ -40,8 +54,8 @@ public class RubyController : MonoBehaviour
 
     private void FixedUpdate(){
         var position = transform.position;
-        position.x = position.x + speed * _horizontal * Time.deltaTime;
-        position.y = position.y + speed * _vertical * Time.deltaTime;
+        position.x += speed * _horizontal * Time.deltaTime;
+        position.y += speed * _vertical * Time.deltaTime;
         _rigidbody2D.MovePosition(position);
     }
 
@@ -49,6 +63,7 @@ public class RubyController : MonoBehaviour
         if (_isInvencible){
             return;
         }
+        _animator.SetTrigger("Hit");
         _isInvencible = true;
         _invencibleTimer = invencibleDuration;
         _currentHealth = Mathf.Clamp(_currentHealth - amount, 0, maxHealth);
