@@ -10,6 +10,7 @@ public class EnemyController : MonoBehaviour
     private Animator _animator;
     private float _timer;
     private int _direction = 1;
+    private bool isBroken = true;
     private static readonly int MoveX = Animator.StringToHash("MoveX");
     private static readonly int MoveY = Animator.StringToHash("MoveY");
 
@@ -20,6 +21,10 @@ public class EnemyController : MonoBehaviour
     }
 
     private void Update(){
+        if (!isBroken){
+            return;
+        }
+        
         _timer -= Time.deltaTime;
         if (_timer > 0){
             return;
@@ -29,6 +34,10 @@ public class EnemyController : MonoBehaviour
     }
 
     private void FixedUpdate(){
+        if (!isBroken){
+            return;
+        }
+        
         var position = _rigidbody2D.position;
         if (vertical){
             position.y += speed * Time.deltaTime * _direction;
@@ -47,5 +56,11 @@ public class EnemyController : MonoBehaviour
         if (other.gameObject.TryGetComponent(out RubyController rubyController)){
             rubyController.DoDamage(1);
         }
+    }
+    
+    public void Fix(){
+        isBroken = false;
+        _rigidbody2D.simulated = false;
+        _animator.SetTrigger("Fixed");
     }
 }

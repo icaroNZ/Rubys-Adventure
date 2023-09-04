@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class RubyController : MonoBehaviour
 {
-    
+    public GameObject projectilePrefab;
     private Rigidbody2D _rigidbody2D;
     private Animator _animator;
     private Vector2 _lookDirection = new Vector2(1, 0);
@@ -19,6 +19,8 @@ public class RubyController : MonoBehaviour
     private float _vertical;
     private bool _isInvencible;
     private float _invencibleTimer;
+    private static readonly int Launch1 = Animator.StringToHash("Launch");
+    private static readonly int Hit = Animator.StringToHash("Hit");
 
     private void Start(){
         //QualitySettings.vSyncCount = 0;
@@ -31,6 +33,9 @@ public class RubyController : MonoBehaviour
     void Update(){
         _horizontal = Input.GetAxis("Horizontal");
         _vertical = Input.GetAxis("Vertical");
+        if (Input.GetKeyDown(KeyCode.C)){
+            Launch();
+        }
 
         var move = new Vector2(_horizontal, _vertical);
         if (!Mathf.Approximately(move.x, 0.0f) || !Mathf.Approximately(move.y, 0.0f)){
@@ -63,7 +68,7 @@ public class RubyController : MonoBehaviour
         if (_isInvencible){
             return;
         }
-        _animator.SetTrigger("Hit");
+        _animator.SetTrigger(Hit);
         _isInvencible = true;
         _invencibleTimer = invencibleDuration;
         _currentHealth = Mathf.Clamp(_currentHealth - amount, 0, maxHealth);
@@ -76,5 +81,13 @@ public class RubyController : MonoBehaviour
         _currentHealth = Mathf.Clamp(_currentHealth + amount, 0, maxHealth);
         Debug.Log(_currentHealth + "/" + maxHealth);
         return true;
+    }
+    
+    public void Launch(){
+        var projectileGameObject = Instantiate(projectilePrefab,_rigidbody2D.position + Vector2.up * 0.5f,
+            Quaternion.identity);
+        var projectile = projectileGameObject.GetComponent<Projectile>();
+        projectile.Launch(_lookDirection, 300);
+        _animator.SetTrigger(Launch1);
     }
 }
