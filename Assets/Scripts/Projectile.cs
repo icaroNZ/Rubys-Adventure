@@ -6,13 +6,16 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     private Rigidbody2D _rigidbody2D;
+    public AudioClip launchSound;
 
     private void Awake(){
         _rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
-    public void Launch(Vector2 direction, float force){
+    public void Launch(Vector2 direction, float force, IPlaySound instigator){
         _rigidbody2D.AddForce(direction * force);
+        instigator.PlaySound(launchSound);
+        
     }
 
     private void Update(){
@@ -26,5 +29,6 @@ public class Projectile : MonoBehaviour
             enemyController.Fix();
         }
         Destroy(gameObject);
+        
     }
 }

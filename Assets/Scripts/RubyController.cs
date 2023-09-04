@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class RubyController : MonoBehaviour
+public class RubyController : MonoBehaviour, IPlaySound
 {
     public GameObject projectilePrefab;
+    public AudioClip hit;
     private Rigidbody2D _rigidbody2D;
     private Animator _animator;
+    private AudioSource _audioSource;
     private Vector2 _lookDirection = new Vector2(1, 0);
     public float speed = 5.0f;
     public int maxHealth = 5;
@@ -27,6 +29,7 @@ public class RubyController : MonoBehaviour
         //Application.targetFrameRate = 10;
         _rigidbody2D = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
+        _audioSource = GetComponent<AudioSource>();
         _currentHealth = maxHealth;
     }
 
@@ -75,11 +78,16 @@ public class RubyController : MonoBehaviour
         position.y += speed * _vertical * Time.deltaTime;
         _rigidbody2D.MovePosition(position);
     }
+    
+    public void PlaySound(AudioClip clip){
+        _audioSource.PlayOneShot(clip);
+    }
 
     public void DoDamage(int amount){
         if (_isInvencible){
             return;
         }
+        PlaySound(hit);
         _animator.SetTrigger(Hit);
         _isInvencible = true;
         _invencibleTimer = invencibleDuration;
@@ -102,7 +110,7 @@ public class RubyController : MonoBehaviour
         var projectileGameObject = Instantiate(projectilePrefab,_rigidbody2D.position + Vector2.up * 0.5f,
             Quaternion.identity);
         var projectile = projectileGameObject.GetComponent<Projectile>();
-        projectile.Launch(_lookDirection, 300);
+        projectile.Launch(_lookDirection, 300, this);
         _animator.SetTrigger(Launch1);
     }
 }

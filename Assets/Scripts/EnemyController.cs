@@ -8,15 +8,18 @@ public class EnemyController : MonoBehaviour
     public ParticleSystem smokeEffect;
     private Rigidbody2D _rigidbody2D;
     private Animator _animator;
+    private AudioSource _audioSource;
     private float _timer;
     private int _direction = 1;
     private bool isBroken = true;
     private static readonly int MoveX = Animator.StringToHash("MoveX");
     private static readonly int MoveY = Animator.StringToHash("MoveY");
+    private static readonly int Fixed = Animator.StringToHash("Fixed");
 
     private void Start(){
         _rigidbody2D = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
+        _audioSource = GetComponent<AudioSource>();
         _timer = changeTime;
     }
 
@@ -61,8 +64,9 @@ public class EnemyController : MonoBehaviour
     public void Fix(){
         isBroken = false;
         _rigidbody2D.simulated = false;
-        _animator.SetTrigger("Fixed");
+        _animator.SetTrigger(Fixed);
         smokeEffect.Stop();
+        _audioSource.Stop();
         Destroy(smokeEffect.gameObject);
     }
 }

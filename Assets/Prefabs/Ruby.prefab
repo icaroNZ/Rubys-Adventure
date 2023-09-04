@@ -101,6 +101,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 4744849598472112212, guid: 3ba3ebe2f0da5494b8d5cfbdd72f4cd7, type: 3}
+  hit: {fileID: 8300000, guid: 9b1bb1f450b7d444fa4a8019d13519a7, type: 3}
   speed: 5
   maxHealth: 5
   invencibleDuration: 2
