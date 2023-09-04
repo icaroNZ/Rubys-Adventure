@@ -33,8 +33,20 @@ public class RubyController : MonoBehaviour
     void Update(){
         _horizontal = Input.GetAxis("Horizontal");
         _vertical = Input.GetAxis("Vertical");
+        
         if (Input.GetKeyDown(KeyCode.C)){
             Launch();
+        }
+
+        if (Input.GetKeyDown(KeyCode.X)){
+            var hit = Physics2D.Raycast(_rigidbody2D.position + Vector2.up * 0.2f, _lookDirection, 1.5f,
+                LayerMask.GetMask("NPC"));
+            if(hit.collider != null){
+               if (hit.collider.gameObject.TryGetComponent(out NonPlayerCharacter rubyController)){
+                   rubyController.DisplayDialog();
+               }
+                
+            }
         }
 
         var move = new Vector2(_horizontal, _vertical);
@@ -72,7 +84,8 @@ public class RubyController : MonoBehaviour
         _isInvencible = true;
         _invencibleTimer = invencibleDuration;
         _currentHealth = Mathf.Clamp(_currentHealth - amount, 0, maxHealth);
-        Debug.Log(_currentHealth + "/" + maxHealth);
+        UIHealthBar.Instance.SetValue(_currentHealth / (float)maxHealth);
+
     }
     public bool ChangeCurrentHealthIfNeed(int amount){
         if (_currentHealth == maxHealth){
@@ -80,7 +93,9 @@ public class RubyController : MonoBehaviour
         }
         _currentHealth = Mathf.Clamp(_currentHealth + amount, 0, maxHealth);
         Debug.Log(_currentHealth + "/" + maxHealth);
+        UIHealthBar.Instance.SetValue(_currentHealth / (float)maxHealth);
         return true;
+        
     }
     
     public void Launch(){
